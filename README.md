@@ -3,6 +3,9 @@
 
 > ⚠️ **NOTICE**: This project was recently initiated and is currently under active development. It is not yet live or ready for production use.
 
+~~[Demo](https://finance-dashboard-demo.vercel.app)~~ • **[📋 Complete Architecture](./docs/ARCHITECTURE.md)** • [API Reference](./docs/API.md)
+
+**🚧 Development Status**: This project is in early development phase. Features and documentation are being actively built.
 
 <div align="center">
 
