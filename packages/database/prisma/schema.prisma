@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts     Account[]
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+  goals        Goal[]
+
+  @@map("users")
+}
+
+model Account {
+  id       String      @id @default(cuid())
+  name     String
+  type     AccountType
+  balance  Decimal     @default(0) @db.Decimal(12, 2)
+  currency String      @default("USD")
+  isActive Boolean     @default(true)
+  userId   String
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+
+  @@map("accounts")
+}
+
+model Category {
+  id       String  @id @default(cuid())
+  name     String
+  color    String  @default("#6B7280")
+  icon     String  @default("tag")
+  parentId String?
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Category? @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryParent")
+
+  transactions Transaction[]
+  budgets      Budget[]
+
+  createdAt DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  amount      Decimal         @db.Decimal(12, 2)
+  type        TransactionType
+  description String
+  date        DateTime        @db.Date
+  receiptUrl  String?
+  tags        String[]
+  isRecurring Boolean         @default(false)
+  userId      String
+  accountId   String
+  categoryId  String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
+
+model Budget {
+  id        String      @id @default(cuid())
+  amount    Decimal     @db.Decimal(10, 2)
+  period    BudgetPeriod
+  startDate DateTime    @db.Date
+  endDate   DateTime?   @db.Date
+  isActive  Boolean     @default(true)
+  userId    String
+  categoryId String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@map("budgets")
+}
+
+model Goal {
+  id            String   @id @default(cuid())
+  name          String
+  targetAmount  Decimal  @db.Decimal(12, 2)
+  currentAmount Decimal  @default(0) @db.Decimal(12, 2)
+  targetDate    DateTime @db.Date
+  category      String
+  isAchieved    Boolean  @default(false)
+  userId        String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("goals")
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT
+  INVESTMENT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+enum BudgetPeriod {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
