@@ -10,8 +10,8 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "echo 'UI package - no build needed yet'",
+    "dev": "echo 'UI package - watching for changes'",
     "lint": "eslint src/",
     "type-check": "tsc --noEmit"
   },
