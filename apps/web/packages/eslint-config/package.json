@@ -1,0 +1,13 @@
+{
+  "name": "@finance-dashboard/eslint-config",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Shared ESLint configuration for finance dashboard",
+  "keywords": [
+    "eslint",
+    "config"
+  ],
+  "dependencies": {
+    "eslint": "^8.57.1"
+  }
+}
